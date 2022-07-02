@@ -2,9 +2,18 @@
 
 ## Welcome!
 
-Extend current prefect with Opentelemetry capability to monitor
+Extend prefect Orion with [Opentelemetry](https://opentelemetry.io/) capability to monitor the server side
 
 ## Getting Started
+
+This project create a new Perfect orion factory that wrap the original one and add opentelemetry capability for the following area
+
+- FastAPI
+- SQLAlchemy
+- Postgres
+- SQLLite
+
+This is setup to only export all the opentelemetry at the format OTLP to an exporter that you can use after to dispatch to your metrics, log or trace.
 
 ### Python setup
 
@@ -14,31 +23,17 @@ We recommend using a Python virtual environment manager such as pipenv, conda or
 
 These tasks are designed to work with Prefect 2.0. For more information about how to use Prefect, please refer to the [Prefect documentation](https://orion-docs.prefect.io/).
 
+
+<!-- 
+No pushed yet to pypi
 ### Installation
 
 Install `prefect-opentelemetry` with `pip`:
 
 ```bash
 pip install prefect-opentelemetry
-```
+``` -->
 
-### Write and run a flow
-
-```python
-from prefect import flow
-from prefect_opentelemetry.tasks import (
-    goodbye_prefect_opentelemetry,
-    hello_prefect_opentelemetry,
-)
-
-
-@flow
-def example_flow():
-    hello_prefect_opentelemetry
-    goodbye_prefect_opentelemetry
-
-example_flow()
-```
 
 ## Resources
 
