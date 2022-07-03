@@ -1,1 +1,5 @@
-prefect>=2.0a13
+prefect>=2.0b6
+opentelemetry-instrumentation-httpx
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-asyncpg
+opentelemetry-sdk
