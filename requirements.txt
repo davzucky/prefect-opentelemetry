@@ -2,4 +2,5 @@ prefect>=2.0b6
 opentelemetry-instrumentation-httpx
 opentelemetry-instrumentation-fastapi
 opentelemetry-instrumentation-asyncpg
+opentelemetry-instrumentation-sqlalchemy
 opentelemetry-sdk
