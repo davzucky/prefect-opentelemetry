@@ -24,11 +24,12 @@ from opentelemetry.sdk.resources import Resource
 def test_call_fast_api_instrumentor_once_with_app(
     mocker, tracer_provider: TracerProvider
 ):
-    spy = mocker.spy(FastAPIInstrumentor, "instrument_app")
+    instrumentor = FastAPIInstrumentor()
+    spy = mocker.spy(instrumentor, "instrument")
 
     app = FastAPI()
-    monitor = fastapi_monitoring.FastAPIMonitoring(app)
+    monitor = fastapi_monitoring.FastAPIMonitoring(instrumentor=instrumentor)
     monitor.monitor(tracer_provider=tracer_provider)
 
     assert spy.call_count == 1
-    spy.assert_called_with(app=app, tracer_provider=tracer_provider)
+    spy.assert_called_with(tracer_provider=tracer_provider)
