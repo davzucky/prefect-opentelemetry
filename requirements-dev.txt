@@ -1,4 +1,6 @@
 pytest
+pytest-watch
+pytest-mock
 black
 flake8
 mypy
