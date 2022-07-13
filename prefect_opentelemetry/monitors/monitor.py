@@ -3,7 +3,6 @@ Defines the monitor protocol
 """
 from typing import Protocol
 
-from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.trace import TracerProvider
 
 
@@ -15,17 +14,6 @@ class Monitor(Protocol):
         instrumentor: BaseIntrumentor
 
     """
-
-    @property
-    def instrumentor(self) -> BaseInstrumentor:
-        """
-        Property that return the baseInstrumentor
-
-        Returns:
-            Returns the BaseInstrumentor
-
-        """
-        pass
 
     def monitor(self, trace_provider: TracerProvider) -> None:
         """
