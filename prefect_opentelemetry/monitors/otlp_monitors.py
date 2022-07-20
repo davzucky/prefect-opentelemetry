@@ -4,6 +4,7 @@ Defines generic monitor that implement standard opentelemetry instrumentor
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
+from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
@@ -43,6 +44,28 @@ class BaseOTLPMonitor(ABC):
         """
 
         self.instrumentor.instrument(tracer_provider=tracer_provider)
+
+
+@dataclass
+class AsyncPGMonitor(BaseOTLPMonitor):
+    """
+    A monitor class that allow to enable AsyncPG instrumentation
+
+    Args:
+        _instrumentor: AsyncPGInstrumentor that can be replace for testing
+
+    """
+
+    _instrumentor: BaseInstrumentor = field(
+        default_factory=lambda: AsyncPGInstrumentor()
+    )
+
+    @property
+    def instrumentor(self) -> BaseInstrumentor:
+        """
+        Gets the base intrumentor
+        """
+        return self._instrumentor
 
 
 @dataclass
