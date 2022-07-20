@@ -1,6 +1,7 @@
 from typing import Type
 
 import pytest
+from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
@@ -9,6 +10,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 
 from prefect_opentelemetry.monitors import (
+    AsyncPGMonitor,
     FastAPIMonitor,
     SQLAlchemyMonitor,
     SQLLite3Monitor,
@@ -18,10 +20,10 @@ from prefect_opentelemetry.monitors import (
 @pytest.mark.parametrize(
     ["instrumentor", "monitor_type", "tracer_provider"],
     [
-        (SQLAlchemyInstrumentor(), SQLAlchemyMonitor, None),
+        (AsyncPGInstrumentor(), AsyncPGMonitor, None),
         (
-            SQLAlchemyInstrumentor(),
-            SQLAlchemyMonitor,
+            AsyncPGInstrumentor(),
+            AsyncPGMonitor,
             TracerProvider(
                 resource=Resource.create(
                     {
@@ -34,6 +36,18 @@ from prefect_opentelemetry.monitors import (
         (
             FastAPIInstrumentor(),
             FastAPIMonitor,
+            TracerProvider(
+                resource=Resource.create(
+                    {
+                        "service.name": "Prefect",
+                    }
+                )
+            ),
+        ),
+        (SQLAlchemyInstrumentor(), SQLAlchemyMonitor, None),
+        (
+            SQLAlchemyInstrumentor(),
+            SQLAlchemyMonitor,
             TracerProvider(
                 resource=Resource.create(
                     {
