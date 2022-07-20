@@ -5,8 +5,29 @@ from dataclasses import dataclass
 from typing import List
 
 from opentelemetry.trace import TracerProvider
+from prefect.orion.utilities.database import get_dialect
+from prefect.settings import PREFECT_ORION_DATABASE_CONNECTION_URL
 
 from .monitor import Monitor
+from .otlp_monitors import (
+    AsyncPGMonitor,
+    FastAPIMonitor,
+    SQLAlchemyMonitor,
+    SQLLite3Monitor,
+)
+
+
+def get_default_monitors() -> List[Monitor]:
+    monitors = [FastAPIMonitor(), SQLAlchemyMonitor()]
+    connection_url = PREFECT_ORION_DATABASE_CONNECTION_URL.value()
+    dialect = get_dialect(connection_url)
+
+    if dialect.name == "postgresql":
+        monitors.append(AsyncPGMonitor())
+    elif dialect.name == "sqlite":
+        monitors.append(SQLLite3Monitor())
+
+    return monitors
 
 
 @dataclass
