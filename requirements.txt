@@ -5,3 +5,6 @@ opentelemetry-instrumentation-asyncpg
 opentelemetry-instrumentation-sqlalchemy
 opentelemetry-instrumentation-sqlite3
 opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-grpc
+opentelemetry-exporter-otlp-proto-http
+opentelemetry-api

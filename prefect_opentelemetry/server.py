@@ -1,39 +1,68 @@
 """
 Defines the Orion FastAPI app on which we enable opentelemetry
 """
+import sys
+from typing import Callable
+
+import prefect
 from fastapi import FastAPI
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import (
+    PROCESS_RUNTIME_NAME,
+    PROCESS_RUNTIME_VERSION,
+    SERVICE_NAME,
+    SERVICE_VERSION,
+    Resource,
+)
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanExporter
 from prefect.orion.api.server import create_app
-from prefect.settings import Settings
+
+from .monitors import Monitor, MultiMonitors
+from .monitors.multi_monitors import get_default_monitors
+
+fastapi_factory_creator = Callable[[], FastAPI]
 
 
-def create_prefect_with_opentelemetry(
-    settings: Settings = None,
-    ephemeral: bool = False,
-    ignore_cache: bool = False,
+def default_trace_provider(
+    exporter: SpanExporter = OTLPSpanExporter(),
+) -> TracerProvider:
+    provider = TracerProvider(
+        resource=Resource.create(
+            {
+                SERVICE_NAME: "Prefect_Server",
+                SERVICE_VERSION: prefect.__version__,
+                PROCESS_RUNTIME_NAME: sys.implementation.name,
+                PROCESS_RUNTIME_VERSION: sys.implementation.version,
+            },
+        ),
+    )
+    processor = BatchSpanProcessor(exporter)
+    provider.add_span_processor(processor)
+
+    return provider
+
+
+def create_app_with_OTLP(
+    fastapi_factory: fastapi_factory_creator = create_app,
+    tracer_provider: TracerProvider = None,
+    monitor: Monitor = None,
 ) -> FastAPI:
     """
     Create an FastAPI app with opentelemtry enable that includes the Orion API and UI
 
     Args:
-        settings: The settings to use to create the app. If not set, settings are pulled
-            from the context.
-        ignore_cache: If set, a new application will be created even if the settings
-            match. Otherwise, an application is returned from the cache.
-        ephemeral: If set, the application will be treated as ephemeral. The UI
-            and services will be disabled.
+        fastapi_factory: Callable that return the base fastapi app.
+        trace_provider: TracerProvider to use to initialize the intrumentation.
+        monitor: Monitor used to instrument the application
     """
+    tracer_provider = tracer_provider or default_trace_provider()
+    monitor = monitor or MultiMonitors(monitors=get_default_monitors())
 
-    app = create_app(settings=settings, ephemeral=ephemeral, ignore_cache=ignore_cache)
+    trace.set_tracer_provider(tracer_provider)
+    monitor.monitor(tracer_provider=tracer_provider)
 
-    # provider = TracerProvider(
-    #     resource=Resource.create(
-    #         {
-    #             "service.name": "Prefect",
-    #             "service.version": prefect.__version__,
-    #             "process.runtime.name": sys.implementation.name,
-    #             "process.runtime.version": sys.implementation.version,
-    #         },
-    #     ),
-    # )
+    app = fastapi_factory()
 
     return app

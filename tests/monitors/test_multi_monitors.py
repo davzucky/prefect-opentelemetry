@@ -31,7 +31,7 @@ def test_call_monitor_in_list(nb_monitors: int):
     child_monitors = [FakeMonitor(name=f"Monitor_{i}") for i in range(nb_monitors)]
 
     monitor = MultiMonitors(monitors=child_monitors)
-    monitor.monitor(None)
+    monitor.monitor(tracer_provider=None)
 
     assert len(child_monitors) == len([m for m in child_monitors if m.nb_call == 1])
 

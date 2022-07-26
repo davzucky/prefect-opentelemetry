@@ -33,7 +33,7 @@ class BaseOTLPMonitor(ABC):
         """
         ...
 
-    def monitor(self, tracer_provider: TracerProvider = None) -> None:
+    def monitor(self, tracer_provider: TracerProvider) -> None:
         """
         Enable the instrumentation of FastAPI
 
