@@ -17,7 +17,7 @@ from .otlp_monitors import (
 )
 
 
-def get_default_monitors() -> List[Monitor]:
+def get_default_prefect_server_monitors() -> List[Monitor]:
     """
     Gets the default list of monitors that we support
 

@@ -4,6 +4,8 @@ Defines generic monitor that implement standard opentelemetry instrumentor
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
+import fastapi
+import prefect.orion.api.server as orion_server
 from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
@@ -33,6 +35,16 @@ class BaseOTLPMonitor(ABC):
         """
         ...
 
+    def _monitor(self, tracer_provider: TracerProvider) -> None:
+        """
+        Allow to run other custom action to enable the monitoring
+
+        Args:
+            tracer_provider: Allow to initialize the TracerProvider to set default
+                resources
+        """
+        ...
+
     def monitor(self, tracer_provider: TracerProvider) -> None:
         """
         Enable the instrumentation of FastAPI
@@ -40,10 +52,10 @@ class BaseOTLPMonitor(ABC):
         Args:
             tracer_provider: Allow to initialize the TracerProvider to set default
                 resources
-
         """
 
         self.instrumentor.instrument(tracer_provider=tracer_provider)
+        self._monitor(tracer_provider=tracer_provider)
 
 
 @dataclass
@@ -88,6 +100,13 @@ class FastAPIMonitor(BaseOTLPMonitor):
         Gets the base intrumentor
         """
         return self._instrumentor
+
+    def _monitor(self, tracer_provider: TracerProvider) -> None:
+        """
+        replaced orin server fastapo with the instrumented instance
+        """
+        if orion_server.FastAPI != fastapi.FastAPI:
+            orion_server.FastAPI = fastapi.FastAPI
 
 
 @dataclass

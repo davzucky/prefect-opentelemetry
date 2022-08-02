@@ -9,7 +9,9 @@ from prefect_opentelemetry.monitors import (
     MultiMonitors,
     SQLLite3Monitor,
 )
-from prefect_opentelemetry.monitors.multi_monitors import get_default_monitors
+from prefect_opentelemetry.monitors.multi_monitors import (
+    get_default_prefect_server_monitors,
+)
 
 
 @dataclass
@@ -41,7 +43,7 @@ def test_default_monitors_contain_asynpg():
         "postgresql+asyncpg://postgres:yourTopSecretPassword@localhost:5432/orion"
     )
     with temporary_settings({PREFECT_ORION_DATABASE_CONNECTION_URL: db_con_str}):
-        monitors = get_default_monitors()
+        monitors = get_default_prefect_server_monitors()
         assert len(monitors) == 3
         assert (
             len(
@@ -55,7 +57,7 @@ def test_default_monitors_contain_sqllite():
     db_con_str = "sqlite+aiosqlite:////full/path/to/a/location/orion.db"
 
     with temporary_settings({PREFECT_ORION_DATABASE_CONNECTION_URL: db_con_str}):
-        monitors = get_default_monitors()
+        monitors = get_default_prefect_server_monitors()
         assert len(monitors) == 3
         assert (
             len(

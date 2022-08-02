@@ -2,6 +2,7 @@ import prefect
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
+from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from prefect.orion.api.server import create_app
 
@@ -35,10 +36,17 @@ def client(prefect_ephemeral_app, in_memory_tracer_provider):
     return test_client
 
 
-def test_factory_return_prefect_app(client):
+def test_factory_return_prefect_app(
+    client,
+    in_memory_tracer_provider: TracerProvider,
+    in_memory_exporter: InMemorySpanExporter,
+):
 
     response = client.get("/api/admin/version")
+    in_memory_tracer_provider.force_flush(10)
+    spans = in_memory_exporter.get_finished_spans()
 
     assert response.status_code == status.HTTP_200_OK
     assert prefect.__version__
     assert prefect.__version__ == response.json()
+    assert len(spans) == 6

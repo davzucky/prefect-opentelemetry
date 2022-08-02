@@ -20,7 +20,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanExporter
 from prefect.orion.api.server import create_app
 
 from .monitors import Monitor, MultiMonitors
-from .monitors.multi_monitors import get_default_monitors
+from .monitors.multi_monitors import get_default_prefect_server_monitors
 
 fastapi_factory_creator = Callable[[], FastAPI]
 
@@ -58,11 +58,11 @@ def create_app_with_OTLP(
         monitor: Monitor used to instrument the application
     """
     tracer_provider = tracer_provider or default_trace_provider()
-    monitor = monitor or MultiMonitors(monitors=get_default_monitors())
+    monitor = monitor or MultiMonitors(monitors=get_default_prefect_server_monitors())
 
     trace.set_tracer_provider(tracer_provider)
     monitor.monitor(tracer_provider=tracer_provider)
 
     app = fastapi_factory()
-
+    # FastAPIInstrumentor.instrument_app(app)
     return app
