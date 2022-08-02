@@ -10,6 +10,7 @@ mkdocstrings[python]
 isort
 pre-commit
 pytest-asyncio
+pytest-cov
 mock; python_version < '3.8'
 mkdocs-gen-files
 interrogate
