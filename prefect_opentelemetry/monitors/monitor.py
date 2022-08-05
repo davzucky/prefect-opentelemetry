@@ -15,7 +15,7 @@ class Monitor(Protocol):
 
     """
 
-    def monitor(self, trace_provider: TracerProvider) -> None:
+    def monitor(self, tracer_provider: TracerProvider) -> None:
         """
         Enable the instrumentation of FastAPI
 

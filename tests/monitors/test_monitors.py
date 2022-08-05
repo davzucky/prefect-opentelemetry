@@ -1,8 +1,12 @@
 from typing import Type
 
+import prefect.orion.api.server as orion_server
 import pytest
 from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.instrumentation.fastapi import (
+    FastAPIInstrumentor,
+    _InstrumentedFastAPI,
+)
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from opentelemetry.instrumentation.sqlite3 import SQLite3Instrumentor
@@ -83,3 +87,10 @@ def test_call_call_intrument_with_provider(
 
     assert spy.call_count == 1
     spy.assert_called_with(tracer_provider=tracer_provider)
+
+
+def test_prefect_fastapi_replaced():
+    monitor = FastAPIMonitor()
+    monitor.monitor(None)
+
+    assert orion_server.FastAPI == _InstrumentedFastAPI

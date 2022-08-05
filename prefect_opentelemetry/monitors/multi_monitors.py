@@ -17,7 +17,14 @@ from .otlp_monitors import (
 )
 
 
-def get_default_monitors() -> List[Monitor]:
+def get_default_prefect_server_monitors() -> List[Monitor]:
+    """
+    Gets the default list of monitors that we support
+
+    Args:
+        monitors: List of the monitor we want to group
+
+    """
     monitors = [FastAPIMonitor(), SQLAlchemyMonitor()]
     connection_url = PREFECT_ORION_DATABASE_CONNECTION_URL.value()
     dialect = get_dialect(connection_url)
@@ -52,4 +59,4 @@ class MultiMonitors:
 
         """
         for monitor in self.monitors:
-            monitor.monitor(tracer_provider)
+            monitor.monitor(tracer_provider=tracer_provider)
