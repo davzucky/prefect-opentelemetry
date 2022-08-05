@@ -8,4 +8,4 @@ opentelemetry-sdk
 opentelemetry-exporter-otlp-proto-grpc
 opentelemetry-exporter-otlp-proto-http
 opentelemetry-api
-protobuf<4.0
+protobuf<5.0
