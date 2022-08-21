@@ -38,6 +38,7 @@ def test_call_monitor_in_list(nb_monitors: int):
     assert len(child_monitors) == len([m for m in child_monitors if m.nb_call == 1])
 
 
+@pytest.mark.xfail(reason="Disable postgres OTLP")
 def test_default_monitors_contain_asynpg():
     db_con_str = (
         "postgresql+asyncpg://postgres:yourTopSecretPassword@localhost:5432/orion"
@@ -53,6 +54,7 @@ def test_default_monitors_contain_asynpg():
         )
 
 
+@pytest.mark.xfail(reason="Disable sqllite OTLP")
 def test_default_monitors_contain_sqllite():
     db_con_str = "sqlite+aiosqlite:////full/path/to/a/location/orion.db"
 
