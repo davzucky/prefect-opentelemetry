@@ -6,11 +6,13 @@ from dataclasses import dataclass, field
 
 import fastapi
 import prefect.orion.api.server as orion_server
-from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
+
+# from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
-from opentelemetry.instrumentation.sqlite3 import SQLite3Instrumentor
+
+# from opentelemetry.instrumentation.sqlite3 import SQLite3Instrumentor
 from opentelemetry.trace import TracerProvider
 
 
@@ -58,26 +60,26 @@ class BaseOTLPMonitor(ABC):
         self._monitor(tracer_provider=tracer_provider)
 
 
-@dataclass
-class AsyncPGMonitor(BaseOTLPMonitor):
-    """
-    A monitor class that allow to enable AsyncPG instrumentation
+# @dataclass
+# class AsyncPGMonitor(BaseOTLPMonitor):
+#     """
+#     A monitor class that allow to enable AsyncPG instrumentation
 
-    Args:
-        _instrumentor: AsyncPGInstrumentor that can be replace for testing
+#     Args:
+#         _instrumentor: AsyncPGInstrumentor that can be replace for testing
 
-    """
+#     """
 
-    _instrumentor: BaseInstrumentor = field(
-        default_factory=lambda: AsyncPGInstrumentor()
-    )
+#     _instrumentor: BaseInstrumentor = field(
+#         default_factory=lambda: AsyncPGInstrumentor()
+#     )
 
-    @property
-    def instrumentor(self) -> BaseInstrumentor:
-        """
-        Gets the base intrumentor
-        """
-        return self._instrumentor
+#     @property
+#     def instrumentor(self) -> BaseInstrumentor:
+#         """
+#         Gets the base intrumentor
+#         """
+#         return self._instrumentor
 
 
 @dataclass
@@ -109,26 +111,26 @@ class FastAPIMonitor(BaseOTLPMonitor):
             orion_server.FastAPI = fastapi.FastAPI
 
 
-@dataclass
-class SQLLite3Monitor(BaseOTLPMonitor):
-    """
-    A monitor class that allow to enable SQLLite instrumentation
+# @dataclass
+# class SQLLite3Monitor(BaseOTLPMonitor):
+#     """
+#     A monitor class that allow to enable SQLLite instrumentation
 
-    Args:
-        _instrumentor: SQLite3Instrumentor that can be replace for testing
+#     Args:
+#         _instrumentor: SQLite3Instrumentor that can be replace for testing
 
-    """
+#     """
 
-    _instrumentor: BaseInstrumentor = field(
-        default_factory=lambda: SQLite3Instrumentor()
-    )
+#     _instrumentor: BaseInstrumentor = field(
+#         default_factory=lambda: SQLite3Instrumentor()
+#     )
 
-    @property
-    def instrumentor(self) -> BaseInstrumentor:
-        """
-        Gets the base intrumentor
-        """
-        return self._instrumentor
+#     @property
+#     def instrumentor(self) -> BaseInstrumentor:
+#         """
+#         Gets the base intrumentor
+#         """
+#         return self._instrumentor
 
 
 @dataclass
