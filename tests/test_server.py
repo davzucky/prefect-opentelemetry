@@ -74,4 +74,4 @@ def test_call_create_flows(
 
     assert response.json()["name"] == "my-flow"
     assert response.status_code == status.HTTP_201_CREATED
-    assert len(spans_after) == 13
+    assert len(spans_after) == 9
