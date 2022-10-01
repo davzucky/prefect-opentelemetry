@@ -2,8 +2,7 @@ from typing import Type
 
 import prefect.orion.api.server as orion_server
 import pytest
-
-# from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
+from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
 from opentelemetry.instrumentation.fastapi import (
     FastAPIInstrumentor,
     _InstrumentedFastAPI,
@@ -15,7 +14,8 @@ from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 
-from prefect_opentelemetry.monitors import (  # AsyncPGMonitor,; SQLLite3Monitor,
+from prefect_opentelemetry.monitors import (
+    AsyncPGMonitor,
     FastAPIMonitor,
     SQLAlchemyMonitor,
 )
@@ -24,18 +24,18 @@ from prefect_opentelemetry.monitors import (  # AsyncPGMonitor,; SQLLite3Monitor
 @pytest.mark.parametrize(
     ["instrumentor", "monitor_type", "tracer_provider"],
     [
-        # (AsyncPGInstrumentor(), AsyncPGMonitor, None),
-        # (
-        #     AsyncPGInstrumentor(),
-        #     AsyncPGMonitor,
-        #     TracerProvider(
-        #         resource=Resource.create(
-        #             {
-        #                 "service.name": "Prefect",
-        #             }
-        #         )
-        #     ),
-        # ),
+        (AsyncPGInstrumentor(), AsyncPGMonitor, None),
+        (
+            AsyncPGInstrumentor(),
+            AsyncPGMonitor,
+            TracerProvider(
+                resource=Resource.create(
+                    {
+                        "service.name": "Prefect",
+                    }
+                )
+            ),
+        ),
         (FastAPIInstrumentor(), FastAPIMonitor, None),
         (
             FastAPIInstrumentor(),

@@ -70,7 +70,7 @@ class AsyncPGMonitor(BaseOTLPMonitor):
     """
 
     _instrumentor: BaseInstrumentor = field(
-        default_factory=lambda: AsyncPGInstrumentor(True)
+        default_factory=lambda: AsyncPGInstrumentor()
     )
 
     @property
@@ -79,6 +79,16 @@ class AsyncPGMonitor(BaseOTLPMonitor):
         Gets the base intrumentor
         """
         return self._instrumentor
+
+    def _monitor(self, tracer_provider: TracerProvider) -> None:
+        """
+        Allow to run other custom action to enable the monitoring
+
+        Args:
+            tracer_provider: Allow to initialize the TracerProvider to set default
+                resources
+        """
+        self.instrumentor.capture_parameters = True
 
 
 @dataclass

@@ -1,7 +1,7 @@
 from .monitor import Monitor
 from .multi_monitors import MultiMonitors
 from .otlp_monitors import (
-    # AsyncPGMonitor,
+    AsyncPGMonitor,
     FastAPIMonitor,
     # SQLLite3Monitor,
     SQLAlchemyMonitor,
@@ -9,7 +9,7 @@ from .otlp_monitors import (
 
 __all__ = [
     "Monitor",
-    # "AsyncPGMonitor",
+    "AsyncPGMonitor",
     "FastAPIMonitor",
     "MultiMonitors",
     # "SQLLite3Monitor",
