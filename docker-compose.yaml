@@ -1,0 +1,106 @@
+version: "3.5"
+# Features driving version requirement
+# - networks.name                 3.5
+# - healthcheck.start_period      2.3
+# - healthcheck                   2.1
+
+services:
+  # --------------------------------------#
+  #               Postgres                #
+  # --------------------------------------#
+  postgres:
+    image: postgres:14.5
+    command:
+      - postgres
+      - -c
+      - max_connections=150
+    environment:
+      POSTGRES_USER: prefect
+      POSTGRES_PASSWORD: test-password
+      POSTGRES_DB: prefect_server
+    healthcheck:
+      interval: 10s
+      retries: 60
+      start_period: 2s
+      test: pg_isready -q -d $${POSTGRES_DB} -U $${POSTGRES_USER} | grep "accepting connections" || exit 1
+      timeout: 2s
+    ports:
+    - published: 5433
+      target: 5432
+    restart: on-failure
+    # volumes:
+    #   - ./volumes/postgres:/var/lib/postgresql/data
+    networks:
+      - prefect
+
+  # --------------------------------------#
+  #           Prefect Orion               #
+  # --------------------------------------#
+  prefect-server:
+    build: .
+    command:
+      - uvicorn
+      - --app-dir
+      - $$(python -c 'import prefect; print(prefect.__module_path__.parent)')
+      - --factory
+      - prefect_opentelemetry.server:create_app_with_OTLP
+      - --host
+      - 0.0.0.0
+      - --port
+      - "4200"
+    ports:
+      - 4200:4200
+    depends_on:
+      postgres:
+        condition: service_started
+    # volumes:
+    #   - ${PWD}/volumes/prefect:/root/.prefect
+    #   - ${PWD}/flows:/flows
+    environment:
+      # APP_DIR: 
+      PREFECT_ORION_API_HOST: 0.0.0.0
+      PREFECT_ORION_DATABASE_CONNECTION_URL: postgresql+asyncpg://prefect:test-password@postgres:5432/prefect_server
+      PREFECT_ORION_ANALYTICS_ENABLED: "false"
+      PREFECT_LOGGING_SERVER_LEVEL: WARNING
+      PREFECT_API_URL: http://localhost:4200/api
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4317
+    networks:
+      - prefect
+
+  # --------------------------------------#
+  #               Zipkin                  #
+  # --------------------------------------#
+  zipkin:
+    image: openzipkin/zipkin:2.23
+    container_name: zipkin
+    ports:
+      - 9411:9411
+    networks:
+      - prefect
+
+  # --------------------------------------#
+  #           OTEL Collector              #
+  # --------------------------------------#
+  otel-collector:
+    image: otel/opentelemetry-collector:0.60.0
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "1888:1888"   # pprof extension
+      - "4317:4317"   #OTEL grpc
+      - "4318:4318"   #OTEL http
+      - "8888:8888"   # Prometheus metrics exposed by the collector
+      - "8889:8889"   # Prometheus exporter metrics
+      - "13133:13133" # health_check extension
+      - "9411"   # Zipkin receiver
+      - "55679:55679" # zpages extension
+    depends_on:
+      - zipkin
+    networks:
+      - prefect
+
+      
+networks:
+  prefect:
+    name: prefect
