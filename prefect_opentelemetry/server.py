@@ -28,6 +28,9 @@ fastapi_factory_creator = Callable[[], FastAPI]
 def default_trace_provider(
     exporter: SpanExporter = OTLPSpanExporter(),
 ) -> TracerProvider:
+    """
+    Get the deafult trace provider
+    """
     provider = TracerProvider(
         resource=Resource.create(
             {

@@ -6,8 +6,7 @@ from dataclasses import dataclass, field
 
 import fastapi
 import prefect.orion.api.server as orion_server
-
-# from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
+from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
@@ -60,26 +59,26 @@ class BaseOTLPMonitor(ABC):
         self._monitor(tracer_provider=tracer_provider)
 
 
-# @dataclass
-# class AsyncPGMonitor(BaseOTLPMonitor):
-#     """
-#     A monitor class that allow to enable AsyncPG instrumentation
+@dataclass
+class AsyncPGMonitor(BaseOTLPMonitor):
+    """
+    A monitor class that allow to enable AsyncPG instrumentation
 
-#     Args:
-#         _instrumentor: AsyncPGInstrumentor that can be replace for testing
+    Args:
+        _instrumentor: AsyncPGInstrumentor that can be replace for testing
 
-#     """
+    """
 
-#     _instrumentor: BaseInstrumentor = field(
-#         default_factory=lambda: AsyncPGInstrumentor()
-#     )
+    _instrumentor: BaseInstrumentor = field(
+        default_factory=lambda: AsyncPGInstrumentor(True)
+    )
 
-#     @property
-#     def instrumentor(self) -> BaseInstrumentor:
-#         """
-#         Gets the base intrumentor
-#         """
-#         return self._instrumentor
+    @property
+    def instrumentor(self) -> BaseInstrumentor:
+        """
+        Gets the base intrumentor
+        """
+        return self._instrumentor
 
 
 @dataclass
