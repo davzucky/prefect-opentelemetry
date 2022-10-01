@@ -38,7 +38,7 @@ services:
   # --------------------------------------#
   prefect-server:
     build: .
-    command:
+    command: 
       - uvicorn
       - --app-dir
       - $$(python -c 'import prefect; print(prefect.__module_path__.parent)')
@@ -48,6 +48,8 @@ services:
       - 0.0.0.0
       - --port
       - "4200"
+    # stdin_open: true # docker run -i
+    # tty: true        # docker run -t
     ports:
       - 4200:4200
     depends_on:
