@@ -55,11 +55,7 @@ services:
     depends_on:
       postgres:
         condition: service_started
-    # volumes:
-    #   - ${PWD}/volumes/prefect:/root/.prefect
-    #   - ${PWD}/flows:/flows
     environment:
-      # APP_DIR: 
       PREFECT_ORION_API_HOST: 0.0.0.0
       PREFECT_ORION_DATABASE_CONNECTION_URL: postgresql+asyncpg://prefect:test-password@postgres:5432/prefect_server
       PREFECT_ORION_ANALYTICS_ENABLED: "false"
